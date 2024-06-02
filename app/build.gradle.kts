@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.daggerHiltAndroid)
+    alias(libs.plugins.kotlinKapt)
 }
 
 android {
@@ -66,4 +68,26 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Accompanist
+    implementation(libs.accompanist.systemuicontroller)
+
+    // Navigation Compose
+    implementation(libs.navigation.compose)
+
+    // Dagger - Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    //noinspection KaptUsageInsteadOfKsp
+    kapt(libs.room.compiler)
+    testImplementation(libs.room.testing)
+    androidTestImplementation(libs.room.testing)
+
+    // Work Manager
+    implementation(libs.androidx.work.runtime.ktx)
 }
