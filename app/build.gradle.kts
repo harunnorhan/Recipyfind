@@ -80,6 +80,15 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
+    // Retrofit
+    implementation(libs.retrofit)
+
+    // GSON
+    implementation(libs.gson)
+
+    // GSON Converter
+    implementation(libs.converter.gson.v2110)
+
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
