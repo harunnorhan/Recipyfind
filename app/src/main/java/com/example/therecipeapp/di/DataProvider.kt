@@ -69,11 +69,10 @@ class DataProviderModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+    fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.spoonacular.com/recipes/complexSearch?")
+            .baseUrl("https://api.spoonacular.com/recipes/")
             .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
             .build()
     }
 }

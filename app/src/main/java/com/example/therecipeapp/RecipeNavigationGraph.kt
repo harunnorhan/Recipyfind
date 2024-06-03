@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.therecipeapp.feature.home.HomeScreen
+import com.example.therecipeapp.feature.splash.SplashScreen
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -32,7 +34,11 @@ fun RecipeNavigationGraph(
         composable(
             route = RecipeDestination.SPLASH
         ) {
-
+            SplashScreen(
+                onSplashFinished = {
+                    navActions.navigateToHome()
+                }
+            )
         }
 
         composable(
@@ -44,7 +50,7 @@ fun RecipeNavigationGraph(
         composable(
             route = RecipeDestination.HOME
         ) {
-
+            HomeScreen()
         }
 
         composable(
