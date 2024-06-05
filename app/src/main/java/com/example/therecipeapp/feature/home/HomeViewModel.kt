@@ -1,11 +1,12 @@
 package com.example.therecipeapp.feature.home
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.therecipeapp.data.RecipeRepository
-import com.example.therecipeapp.data.source.toRecipesModelList
-import com.example.therecipeapp.models.RecipeModel
+import com.example.therecipeapp.data.source.network.extensions.recipes.toRecipesModelList
+import com.example.therecipeapp.models.recipes.RecipeModel
 import com.example.therecipeapp.utils.ApiResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,5 +61,10 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun saveSelectedRecipe(recipe: RecipeModel) {
+        savedStateHandle["selectedRecipe"] = recipe
+        Log.v("SavedStateHandle", "Saved recipe with id: ${recipe.id}")
     }
 }

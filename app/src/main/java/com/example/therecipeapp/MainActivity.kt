@@ -19,38 +19,20 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    var navActions: RecipeNavigationActions? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val navController: NavHostController = rememberNavController()
-            navActions = remember(navController) {
+            val navActions = remember(navController) {
                 RecipeNavigationActions(navController)
             }
             TheRecipeAppTheme {
                 RecipeNavigationGraph(
                     navController = navController,
-                    navActions = navActions!!
+                    navActions = navActions
                 )
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TheRecipeAppTheme {
-        Greeting("Android")
     }
 }

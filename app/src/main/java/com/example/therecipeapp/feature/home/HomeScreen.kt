@@ -1,6 +1,7 @@
 package com.example.therecipeapp.feature.home
 
-import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,11 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.therecipeapp.models.RecipeModel
+import com.example.therecipeapp.feature.error.ErrorView
+import com.example.therecipeapp.feature.loading.LoadingView
+import com.example.therecipeapp.models.recipes.RecipeModel
 import com.example.therecipeapp.utils.capitalizeWords
 
 val mealTypes = listOf(
@@ -53,6 +54,7 @@ val mealTypes = listOf(
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onRecipeClick: (RecipeModel) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -106,55 +108,34 @@ fun HomeScreen(
                 when {
                     state.isLoading -> LoadingView()
                     state.isError -> ErrorView()
-                    else -> RecipeListView(state.recipes)
+                    else ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            state.recipes.forEach { recipe ->
+                                Card(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth(0.8f)
+                                        .clickable {
+                                            onRecipeClick(recipe)
+                                        }
+                                ) {
+                                    Column(modifier = Modifier.padding(8.dp)) {
+                                        Text(text = recipe.title ?: "No title")
+                                        Text(text = "${recipe.id}")
+                                        Text(text = "${recipe.image}")
+                                    }
+                                }
+                            }
+                        }
                 }
             }
         }
     }
 }
 
-@Composable
-fun LoadingView() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
 
-@Composable
-fun ErrorView() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "An error occurred. Please try again.")
-    }
-}
 
-@Composable
-fun RecipeListView(recipes: List<RecipeModel>) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        recipes.forEach { recipe ->
-            RecipeCard(recipe)
-        }
-    }
-}
-
-@Composable
-fun RecipeCard(recipe: RecipeModel) {
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(0.8f)
-    ) {
-        Box(modifier = Modifier.padding(8.dp)) {
-            Text(text = recipe.title ?: "No title")
-        }
-    }
-}
