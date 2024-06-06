@@ -5,14 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.therecipeapp.data.RecipeRepository
-import com.example.therecipeapp.data.source.network.extensions.ingredients.toIngredientModelList
-import com.example.therecipeapp.models.ingredients.IngredientModel
-import com.example.therecipeapp.models.recipes.RecipeModel
+import com.example.therecipeapp.data.source.network.extensions.informations.toInformationModel
+import com.example.therecipeapp.models.informations.InformationModel
+
 import com.example.therecipeapp.utils.ApiResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,9 +19,8 @@ import javax.inject.Inject
 data class RecipeState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
-    val recipe: RecipeModel? = null,
-    val ingredients: List<IngredientModel>? = null,
-    //val instructions: List<InstructionsResponse>? = null
+    val recipeId: Int = 0,
+    val information: InformationModel? = null
 )
 
 @HiltViewModel
@@ -33,13 +31,9 @@ class RecipeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RecipeState())
     val uiState: StateFlow<RecipeState> = _uiState
 
-    fun loadRecipeData(recipeId: Int, recipeTitle: String, recipeImage: String) {
+    fun loadRecipeData(recipeId: Int) {
         Log.d("RecipeViewModel", "Loaded recipe with id: $recipeId")
-        Log.d("RecipeViewModel", "Loaded recipe with title: $recipeTitle")
-        Log.d("RecipeViewModel", "Loaded recipe with image: $recipeImage")
-        _uiState.value = RecipeState(
-            recipe = RecipeModel(id = recipeId, title = recipeTitle, image = recipeImage)
-        )
+        _uiState.value = RecipeState(recipeId = recipeId)
         fetchDetails(recipeId = recipeId)
     }
 
@@ -47,19 +41,26 @@ class RecipeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val ingredientsResult = repository.getIngredientsById(recipeId).first()
-                if (ingredientsResult is ApiResult.Success) {
-                    val ingredientsModel = ingredientsResult.data?.toIngredientModelList()
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            ingredients = ingredientsModel,
-                            isError = false
-                        )
+                repository.getRecipeInformation(id = recipeId).collect { result ->
+                    when (result) {
+                        is ApiResult.Success -> {
+                            val informationModel = result.data?.toInformationModel()
+
+                            _uiState.update { state ->
+                                state.copy(isLoading = false, information = informationModel)
+                            }
+                        }
+                        is ApiResult.Loading -> {
+                            _uiState.update { state ->
+                                state.copy(isLoading = true, isError = false)
+                            }
+                        }
+                        is ApiResult.Error -> {
+                            _uiState.update { state ->
+                                state.copy(isLoading = false, isError = true)
+                            }
+                        }
                     }
-                } else {
-                    Log.d("RecipeViewModel", "Error api")
-                    _uiState.update { it.copy(isLoading = false, isError = true) }
                 }
             } catch (e: Exception) {
                 Log.e("RecipeViewModel", "Error fetching details", e)
@@ -68,3 +69,4 @@ class RecipeViewModel @Inject constructor(
         }
     }
 }
+

@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.therecipeapp.feature.error.ErrorView
 import com.example.therecipeapp.feature.loading.LoadingView
-import com.example.therecipeapp.models.recipes.RecipeModel
 import com.example.therecipeapp.utils.capitalizeWords
 
 val mealTypes = listOf(
@@ -53,7 +52,7 @@ val mealTypes = listOf(
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onRecipeClick: (Int, String, String) -> Unit
+    onRecipeClick: (Int) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -119,11 +118,7 @@ fun HomeScreen(
                                         .padding(8.dp)
                                         .fillMaxWidth(0.8f)
                                         .clickable {
-                                            onRecipeClick(
-                                                recipe.id,
-                                                recipe.title.toString(),
-                                                recipe.image.toString()
-                                            )
+                                            onRecipeClick(recipe.id)
                                         }
                                 ) {
                                     Column(modifier = Modifier.padding(8.dp)) {

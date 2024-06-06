@@ -15,8 +15,6 @@ import androidx.navigation.navArgument
 import com.example.therecipeapp.feature.home.HomeScreen
 import com.example.therecipeapp.feature.recipe.RecipeScreen
 import com.example.therecipeapp.feature.splash.SplashScreen
-import com.example.therecipeapp.models.recipes.RecipeModel
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -56,11 +54,9 @@ fun RecipeNavigationGraph(
             route = RecipeDestination.HOME
         ) {
             HomeScreen(
-                onRecipeClick = { recipeId, recipeTitle, recipeImage ->
+                onRecipeClick = { recipeId ->
                     navActions.navigateToRecipe(
-                        recipeId = recipeId,
-                        recipeTitle = recipeTitle,
-                        recipeImage = recipeImage
+                        recipeId = recipeId
                     )
                 }
             )
@@ -69,19 +65,11 @@ fun RecipeNavigationGraph(
         composable(
             route = RecipeDestination.RECIPE,
             arguments = listOf(
-                navArgument("id") { type = NavType.IntType },
-                navArgument("title") { type = NavType.StringType },
-                navArgument("image") { type = NavType.StringType }
+                navArgument("id") { type = NavType.IntType }
             )
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-            val title = backStackEntry.arguments?.getString("title") ?: "No title"
-            val image = backStackEntry.arguments?.getString("image") ?: "No image"
-            RecipeScreen(
-                id = id,
-                title = title,
-                image = image
-            )
+            RecipeScreen(id = id)
         }
 
         composable(

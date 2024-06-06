@@ -1,7 +1,6 @@
 package com.example.therecipeapp.data.source.network
 
-import com.example.therecipeapp.data.source.network.response.ingredients.IngredientsResponse
-import com.example.therecipeapp.data.source.network.response.instuctions.InstructionsResponse
+import com.example.therecipeapp.data.source.network.response.informations.InformationResponse
 import com.example.therecipeapp.data.source.network.response.recipes.RecipesResponse
 import com.example.therecipeapp.data.source.network.utils.ApiUtils
 import retrofit2.Response
@@ -16,15 +15,9 @@ interface RecipeApiService {
         @Query("type") type: String,
     ): Response<RecipesResponse>
 
-    @GET("{id}/ingredientWidget.json")
-    suspend fun getIngredientsById(
+    @GET("{id}/information")
+    suspend fun getRecipeInformation(
         @Path("id") id: Int,
         @Query("apiKey") apiKey: String = ApiUtils.API_KEY,
-    ): Response<IngredientsResponse>
-
-    @GET("{id}/analyzedInstructions")
-    suspend fun getInstructionsById(
-        @Query("apiKey") apiKey: String = ApiUtils.API_KEY,
-        @Path("id") id: Int,
-    ): Response<List<InstructionsResponse>>
+    ): Response<InformationResponse>
 }

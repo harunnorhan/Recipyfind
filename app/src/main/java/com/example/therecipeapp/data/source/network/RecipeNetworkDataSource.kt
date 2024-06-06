@@ -1,7 +1,6 @@
 package com.example.therecipeapp.data.source.network
 
-import com.example.therecipeapp.data.source.network.response.ingredients.IngredientsResponse
-import com.example.therecipeapp.data.source.network.response.instuctions.InstructionsResponse
+import com.example.therecipeapp.data.source.network.response.informations.InformationResponse
 import com.example.therecipeapp.data.source.network.response.recipes.RecipesResponse
 import com.example.therecipeapp.data.source.network.utils.ApiUtils
 import com.example.therecipeapp.utils.ApiResult
@@ -12,6 +11,7 @@ import javax.inject.Inject
 class RecipeNetworkDataSource @Inject constructor(
     private val recipesApi: RecipeApiService
 ) : NetworkDataSource {
+
     override suspend fun searchRecipes(type: String): Flow<ApiResult<RecipesResponse>> = apiFlow {
         recipesApi.searchRecipes(
             apiKey = ApiUtils.API_KEY,
@@ -19,15 +19,8 @@ class RecipeNetworkDataSource @Inject constructor(
         )
     }
 
-    override suspend fun getIngredientsById(id: Int): Flow<ApiResult<IngredientsResponse>> = apiFlow {
-        recipesApi.getIngredientsById(
-            apiKey = ApiUtils.API_KEY,
-            id = id
-        )
-    }
-
-    override suspend fun getInstructionsById(id: Int): Flow<ApiResult<List<InstructionsResponse>>> = apiFlow {
-        recipesApi.getInstructionsById(
+    override suspend fun getRecipeInformation(id: Int): Flow<ApiResult<InformationResponse>> = apiFlow {
+        recipesApi.getRecipeInformation(
             apiKey = ApiUtils.API_KEY,
             id = id
         )

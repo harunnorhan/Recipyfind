@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,67 +20,76 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.therecipeapp.data.source.network.response.ingredients.IngredientsResponse
-import com.example.therecipeapp.data.source.network.response.instuctions.InstructionsResponse
 import com.example.therecipeapp.feature.error.ErrorView
 import com.example.therecipeapp.feature.loading.LoadingView
-import com.example.therecipeapp.models.ingredients.IngredientModel
-import com.example.therecipeapp.models.recipes.RecipeModel
+import com.example.therecipeapp.models.informations.InformationModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeScreen(
     viewModel: RecipeViewModel = hiltViewModel(),
-    id: Int,
-    title: String,
-    image: String
+    id: Int
 ) {
-    LaunchedEffect(id, title, image) {
-        viewModel.loadRecipeData(
-            recipeId = id,
-            recipeTitle = title,
-            recipeImage = image
-        )
-    }
-
     val state by viewModel.uiState.collectAsState()
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        when {
-            state.isLoading -> LoadingView()
-            state.isError -> ErrorView()
-            state.recipe != null -> RecipeDetailView(state.recipe!!, state.ingredients /*, state.instructions*/)
+    LaunchedEffect(id) {
+        viewModel.loadRecipeData(recipeId = id)
+    }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Recipe") },
+                actions = {
+                    TextButton(onClick = {
+                        viewModel.loadRecipeData(recipeId = id)
+                    }) {
+                        Text(text = "Refresh")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                when {
+                    state.isLoading -> LoadingView()
+                    state.isError -> ErrorView()
+                    else -> state.information?.let { information ->
+                        RecipeDetailView(
+                            state.recipeId,
+                            information
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-fun RecipeDetailView(recipe: RecipeModel, ingredients: List<IngredientModel>?) {
+fun RecipeDetailView(recipeId: Int, information: InformationModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = recipe.title ?: "No title", style = MaterialTheme.typography.titleSmall)
+        Text(text = information.title.toString(), style = MaterialTheme.typography.titleSmall)
+        Text(text = information.image.toString(), style = MaterialTheme.typography.titleSmall)
+        Text(text = recipeId.toString(), style = MaterialTheme.typography.titleSmall)
         Spacer(modifier = Modifier.height(8.dp))
 
-        ingredients?.let {
-            Text(text = "Ingredients:")
-            it.forEach { ingredient ->
-                Text(text = "${ingredient.name}: ${ingredient.amount} ${ingredient.unit} ${ingredient.image}")
-            }
-        }
-
-        /*
-        instructions?.firstOrNull()?.steps?.let {
+        information.instructions?.let {
             Text(text = "Instructions:")
-            it.forEach { step ->
-                Text(text = "${step?.number}. ${step?.step}")
-            }
+            Text(text = it)
         }
-
-         */
     }
 }

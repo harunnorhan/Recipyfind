@@ -1,15 +1,12 @@
 package com.example.therecipeapp
 
-import android.net.Uri
 import androidx.navigation.NavHostController
-import com.example.therecipeapp.models.recipes.RecipeModel
-import com.google.gson.Gson
 
 object RecipeDestination {
     const val SPLASH = "splash"
     const val GREETING = "greeting"
     const val HOME = "home"
-    const val RECIPE = "recipe/{id}/{title}/{image}"
+    const val RECIPE = "recipe/{id}"
     const val FAVORITES = "favorites"
 }
 
@@ -31,8 +28,8 @@ class RecipeNavigationActions(private val navController: NavHostController) {
         }
     }
 
-    fun navigateToRecipe(recipeId: Int, recipeTitle: String, recipeImage: String) {
-        navController.navigate("recipe/${recipeId}/${Uri.encode(recipeTitle)}/${Uri.encode(recipeImage)}") {
+    fun navigateToRecipe(recipeId: Int) {
+        navController.navigate("recipe/${recipeId}") {
             popUpTo(RecipeDestination.HOME) {
                 saveState = true
             }
