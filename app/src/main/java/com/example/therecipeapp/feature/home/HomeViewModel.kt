@@ -62,9 +62,4 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
-    fun saveSelectedRecipe(recipe: RecipeModel) {
-        savedStateHandle["selectedRecipe"] = recipe
-        Log.v("SavedStateHandle", "Saved recipe with id: ${recipe.id}")
-    }
 }

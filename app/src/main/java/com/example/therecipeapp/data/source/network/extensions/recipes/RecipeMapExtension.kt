@@ -7,7 +7,7 @@ import com.example.therecipeapp.models.recipes.RecipeModel
 
 fun RecipeResult.toRecipeModel(): RecipeModel {
     return RecipeModel(
-        id = id,
+        id = id ?: 0,
         title = title,
         image = image
     )

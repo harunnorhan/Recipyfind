@@ -1,6 +1,5 @@
 package com.example.therecipeapp.feature.home
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -54,7 +53,7 @@ val mealTypes = listOf(
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onRecipeClick: (RecipeModel) -> Unit
+    onRecipeClick: (Int, String, String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -120,7 +119,11 @@ fun HomeScreen(
                                         .padding(8.dp)
                                         .fillMaxWidth(0.8f)
                                         .clickable {
-                                            onRecipeClick(recipe)
+                                            onRecipeClick(
+                                                recipe.id,
+                                                recipe.title.toString(),
+                                                recipe.image.toString()
+                                            )
                                         }
                                 ) {
                                     Column(modifier = Modifier.padding(8.dp)) {

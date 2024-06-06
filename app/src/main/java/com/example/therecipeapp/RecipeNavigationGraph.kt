@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,9 +14,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.therecipeapp.feature.home.HomeScreen
 import com.example.therecipeapp.feature.recipe.RecipeScreen
-import com.example.therecipeapp.feature.recipe.RecipeViewModel
 import com.example.therecipeapp.feature.splash.SplashScreen
 import com.example.therecipeapp.models.recipes.RecipeModel
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -57,8 +56,12 @@ fun RecipeNavigationGraph(
             route = RecipeDestination.HOME
         ) {
             HomeScreen(
-                onRecipeClick = { recipe ->
-                    navActions.navigateToRecipe(recipeModel = recipe)
+                onRecipeClick = { recipeId, recipeTitle, recipeImage ->
+                    navActions.navigateToRecipe(
+                        recipeId = recipeId,
+                        recipeTitle = recipeTitle,
+                        recipeImage = recipeImage
+                    )
                 }
             )
         }
@@ -66,18 +69,19 @@ fun RecipeNavigationGraph(
         composable(
             route = RecipeDestination.RECIPE,
             arguments = listOf(
-                navArgument("recipe") {
-                    type = NavType.ParcelableType(RecipeModel::class.java)
-                    defaultValue = null // Varsayılan değeri null olarak ayarlayın
-                }
+                navArgument("id") { type = NavType.IntType },
+                navArgument("title") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val recipe = backStackEntry.arguments?.getParcelable<RecipeModel>("recipe")
-            if (recipe != null) {
-                RecipeScreen(recipe = recipe)
-            } else {
-                // Hata durumu, gerekirse işleyin
-            }
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+            val title = backStackEntry.arguments?.getString("title") ?: "No title"
+            val image = backStackEntry.arguments?.getString("image") ?: "No image"
+            RecipeScreen(
+                id = id,
+                title = title,
+                image = image
+            )
         }
 
         composable(

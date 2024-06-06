@@ -1,6 +1,5 @@
 package com.example.therecipeapp.feature.recipe
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,15 +20,22 @@ import com.example.therecipeapp.data.source.network.response.ingredients.Ingredi
 import com.example.therecipeapp.data.source.network.response.instuctions.InstructionsResponse
 import com.example.therecipeapp.feature.error.ErrorView
 import com.example.therecipeapp.feature.loading.LoadingView
+import com.example.therecipeapp.models.ingredients.IngredientModel
 import com.example.therecipeapp.models.recipes.RecipeModel
 
 @Composable
 fun RecipeScreen(
-    recipe: RecipeModel,
-    viewModel: RecipeViewModel = hiltViewModel()
+    viewModel: RecipeViewModel = hiltViewModel(),
+    id: Int,
+    title: String,
+    image: String
 ) {
-    LaunchedEffect(recipe) {
-        viewModel.loadRecipeData(recipe)
+    LaunchedEffect(id, title, image) {
+        viewModel.loadRecipeData(
+            recipeId = id,
+            recipeTitle = title,
+            recipeImage = image
+        )
     }
 
     val state by viewModel.uiState.collectAsState()
@@ -40,17 +46,14 @@ fun RecipeScreen(
     ) {
         when {
             state.isLoading -> LoadingView()
-            state.isError -> {
-                ErrorView()
-                Log.e("RecipeScreen", "Error: Recipe not found or other error")
-            }
-            state.recipe != null -> RecipeDetailView(state.recipe!!, state.ingredients, state.instructions)
+            state.isError -> ErrorView()
+            state.recipe != null -> RecipeDetailView(state.recipe!!, state.ingredients /*, state.instructions*/)
         }
     }
 }
 
 @Composable
-fun RecipeDetailView(recipe: RecipeModel, ingredients: IngredientsResponse?, instructions: List<InstructionsResponse>?) {
+fun RecipeDetailView(recipe: RecipeModel, ingredients: List<IngredientModel>?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,18 +62,21 @@ fun RecipeDetailView(recipe: RecipeModel, ingredients: IngredientsResponse?, ins
         Text(text = recipe.title ?: "No title", style = MaterialTheme.typography.titleSmall)
         Spacer(modifier = Modifier.height(8.dp))
 
-        ingredients?.ingredients?.let {
+        ingredients?.let {
             Text(text = "Ingredients:")
             it.forEach { ingredient ->
-                Text(text = "${ingredient?.name}: ${ingredient?.amount?.us?.value} ${ingredient?.amount?.us?.unit}")
+                Text(text = "${ingredient.name}: ${ingredient.amount} ${ingredient.unit} ${ingredient.image}")
             }
         }
 
+        /*
         instructions?.firstOrNull()?.steps?.let {
             Text(text = "Instructions:")
             it.forEach { step ->
                 Text(text = "${step?.number}. ${step?.step}")
             }
         }
+
+         */
     }
 }
