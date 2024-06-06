@@ -18,8 +18,8 @@ interface RecipeApiService {
 
     @GET("{id}/ingredientWidget.json")
     suspend fun getIngredientsById(
-        @Query("apiKey") apiKey: String = ApiUtils.API_KEY,
         @Path("id") id: Int,
+        @Query("apiKey") apiKey: String = ApiUtils.API_KEY,
     ): Response<IngredientsResponse>
 
     @GET("{id}/analyzedInstructions")
