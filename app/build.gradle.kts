@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.daggerHiltAndroid) // Dagger Hilt
     alias(libs.plugins.kotlinKapt) // Kotlin Kapt
-    alias(libs.plugins.kotlinParcelize) // Parcelize
 }
 
 android {
@@ -100,7 +99,4 @@ dependencies {
 
     // Work Manager
     implementation(libs.androidx.work.runtime.ktx)
-
-    // Parcelize
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 }

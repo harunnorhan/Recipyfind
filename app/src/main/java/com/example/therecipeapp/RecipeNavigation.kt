@@ -33,12 +33,13 @@ class RecipeNavigationActions(private val navController: NavHostController) {
             popUpTo(RecipeDestination.HOME) {
                 saveState = true
             }
+            launchSingleTop = true
         }
     }
 
     fun navigateToFavorites() {
         navController.navigate(RecipeDestination.FAVORITES) {
-            popUpTo(RecipeDestination.FAVORITES) {
+            popUpTo(RecipeDestination.HOME) {
                 saveState = true
             }
         }

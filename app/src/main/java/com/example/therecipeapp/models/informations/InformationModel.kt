@@ -1,5 +1,6 @@
 package com.example.therecipeapp.models.informations
 
+import com.example.therecipeapp.models.IngredientModel.IngredientModel
 import com.google.gson.annotations.SerializedName
 
 data class InformationModel(
@@ -22,5 +23,8 @@ data class InformationModel(
     val sourceUrl: String?,
 
     @SerializedName("title")
-    val title: String?
+    val title: String?,
+
+    @SerializedName("ingredients")
+    val ingredients: List<IngredientModel?>?
 )

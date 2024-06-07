@@ -52,7 +52,8 @@ val mealTypes = listOf(
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onRecipeClick: (Int) -> Unit
+    onRecipeClick: (Int) -> Unit,
+    onFavoritesClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -66,9 +67,9 @@ fun HomeScreen(
                 title = { Text(text = "Home") },
                 actions = {
                     TextButton(onClick = {
-                        viewModel.fetchRecipes(state.selectedMealType)
+                        onFavoritesClick()
                     }) {
-                        Text(text = "Refresh")
+                        Text(text = "Favorites")
                     }
                 }
             )

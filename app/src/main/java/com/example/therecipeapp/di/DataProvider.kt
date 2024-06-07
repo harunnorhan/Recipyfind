@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.therecipeapp.data.RecipeRepository
 import com.example.therecipeapp.data.RecipeRepositoryImpl
+import com.example.therecipeapp.data.source.local.MIGRATION_1_3
 import com.example.therecipeapp.data.source.local.RecipeDao
 import com.example.therecipeapp.data.source.local.RecipeDatabase
 import com.example.therecipeapp.data.source.network.NetworkDataSource
@@ -15,7 +16,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -41,14 +41,10 @@ object DatabasesModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(
-        @ApplicationContext context: Context
-    ): RecipeDatabase {
-        return Room.databaseBuilder(
-            context.applicationContext,
-            RecipeDatabase::class.java,
-            "recipe_database.db"
-        ).build()
+    fun provideDatabase(@ApplicationContext context: Context): RecipeDatabase {
+        return Room.databaseBuilder(context.applicationContext, RecipeDatabase::class.java, "recipe_database.db")
+            .addMigrations(MIGRATION_1_3)
+            .build()
     }
 }
 

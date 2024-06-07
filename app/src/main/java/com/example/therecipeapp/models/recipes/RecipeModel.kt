@@ -1,11 +1,14 @@
 package com.example.therecipeapp.models.recipes
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.google.gson.annotations.SerializedName
 
-@Parcelize
 data class RecipeModel(
+    @SerializedName("id")
     val id: Int,
+
+    @SerializedName("title")
     val title: String?,
+
+    @SerializedName("image")
     val image: String?
-) : Parcelable
+)

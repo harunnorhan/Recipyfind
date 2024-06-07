@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.therecipeapp.data.RecipeRepository
+import com.example.therecipeapp.data.source.local.toLocalRecipe
 import com.example.therecipeapp.data.source.network.extensions.informations.toInformationModel
 import com.example.therecipeapp.models.informations.InformationModel
 
@@ -65,6 +66,27 @@ class RecipeViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("RecipeViewModel", "Error fetching details", e)
                 _uiState.update { it.copy(isLoading = false, isError = true) }
+            }
+        }
+    }
+
+    fun toggleFavorite() { // Favori durumu değiştirme fonksiyonu
+        viewModelScope.launch {
+            val state = _uiState.value
+            val recipeId = state.recipeId
+            val information = state.information
+
+            if (recipeId != 0) {
+                val isFavorited = repository.isRecipeFavorited(recipeId)
+
+                if (isFavorited) {
+                    repository.removeRecipeFromFavorites(recipeId)
+                    Log.d("RecipeViewModel", "Recipe removed from favorites: $recipeId")
+                } else if (information != null) {
+                    val localRecipe = information.toLocalRecipe()
+                    repository.addRecipeToFavorites(localRecipe)
+                    Log.d("RecipeViewModel", "Recipe added to favorites: $recipeId")
+                }
             }
         }
     }
