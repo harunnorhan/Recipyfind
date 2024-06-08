@@ -2,6 +2,7 @@ package com.example.therecipeapp.di
 
 import android.content.Context
 import androidx.room.Room
+import coil.ImageLoader
 import com.example.therecipeapp.data.RecipeRepository
 import com.example.therecipeapp.data.RecipeRepositoryImpl
 import com.example.therecipeapp.data.source.local.MIGRATION_1_3
@@ -69,6 +70,21 @@ class DataProviderModule {
         return Retrofit.Builder()
             .baseUrl("https://api.spoonacular.com/recipes/")
             .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object ImageLoaderModule {
+
+    @Singleton
+    @Provides
+    fun provideImageLoader(
+        @ApplicationContext context: Context
+    ): ImageLoader {
+        return ImageLoader.Builder(context)
+            .crossfade(true)
             .build()
     }
 }

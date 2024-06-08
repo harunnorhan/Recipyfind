@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.therecipeapp.data.RecipeRepository
 import com.example.therecipeapp.data.source.local.entity.LocalRecipes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +25,9 @@ class FavoritesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(FavoritesState())
     val uiState: StateFlow<FavoritesState> = _uiState
 
+    private val _message = MutableSharedFlow<String>()
+    val message: SharedFlow<String> = _message
+
     fun fetchFavoriteRecipes() {
         viewModelScope.launch {
             repository.getLocalRecipes().collect { recipes ->
@@ -34,12 +39,7 @@ class FavoritesViewModel @Inject constructor(
     fun deleteRecipe(id: Int) {
         viewModelScope.launch {
             repository.deleteRecipe(id)
-        }
-    }
-
-    fun clearAllFavorites() {
-        viewModelScope.launch {
-            repository.clearAllFavorites()
+            _message.emit("Recipe removed from favorites")
         }
     }
 }

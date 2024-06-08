@@ -12,7 +12,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.ImageLoader
 import com.example.therecipeapp.feature.favorites.FavoritesScreen
+import com.example.therecipeapp.feature.greeting.GreetingScreen
 import com.example.therecipeapp.feature.home.HomeScreen
 import com.example.therecipeapp.feature.recipe.RecipeScreen
 import com.example.therecipeapp.feature.splash.SplashScreen
@@ -24,9 +26,9 @@ fun RecipeNavigationGraph(
     navController: NavHostController = rememberNavController(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     startDestination: String = RecipeDestination.SPLASH,
-    navActions: RecipeNavigationActions = remember(navController) { RecipeNavigationActions(navController) }
+    navActions: RecipeNavigationActions = remember(navController) { RecipeNavigationActions(navController) },
+    imageLoader: ImageLoader
 ) {
-
     val currentNavigationBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavigationBackStackEntry?.destination?.route ?: startDestination
 
@@ -40,7 +42,7 @@ fun RecipeNavigationGraph(
         ) {
             SplashScreen(
                 onSplashFinished = {
-                    navActions.navigateToHome()
+                    navActions.navigateToGreeting()
                 }
             )
         }
@@ -48,7 +50,11 @@ fun RecipeNavigationGraph(
         composable(
             route = RecipeDestination.GREETING
         ) {
-
+            GreetingScreen(
+                onStartClick = {
+                    navActions.navigateToHome()
+                }
+            )
         }
 
         composable(
@@ -60,7 +66,8 @@ fun RecipeNavigationGraph(
                 },
                 onFavoritesClick = {
                     navActions.navigateToFavorites()
-                }
+                },
+                imageLoader = imageLoader
             )
         }
 
@@ -71,7 +78,14 @@ fun RecipeNavigationGraph(
             )
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-            RecipeScreen(id = id, navController = navController)
+            RecipeScreen(
+                id = id,
+                onBack = {
+                    navController.popBackStack()
+                },
+                navController = navController,
+                imageLoader = imageLoader
+            )
         }
 
         composable(
@@ -80,7 +94,11 @@ fun RecipeNavigationGraph(
             FavoritesScreen(
                 onRecipeClick = { recipeId ->
                     navActions.navigateToRecipe(recipeId = recipeId)
-                }
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                imageLoader = imageLoader
             )
         }
     }

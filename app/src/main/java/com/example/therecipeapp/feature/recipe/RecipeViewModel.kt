@@ -1,6 +1,5 @@
 package com.example.therecipeapp.feature.recipe
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +19,7 @@ import javax.inject.Inject
 data class RecipeState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
+    val isFavorited: Boolean = false,
     val recipeId: Int = 0,
     val information: InformationModel? = null
 )
@@ -33,7 +33,6 @@ class RecipeViewModel @Inject constructor(
     val uiState: StateFlow<RecipeState> = _uiState
 
     fun loadRecipeData(recipeId: Int) {
-        Log.d("RecipeViewModel", "Loaded recipe with id: $recipeId")
         _uiState.value = RecipeState(recipeId = recipeId)
         fetchDetails(recipeId = recipeId)
     }
@@ -64,13 +63,12 @@ class RecipeViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                Log.e("RecipeViewModel", "Error fetching details", e)
                 _uiState.update { it.copy(isLoading = false, isError = true) }
             }
         }
     }
 
-    fun toggleFavorite() { // Favori durumu değiştirme fonksiyonu
+    fun toggleFavorite() {
         viewModelScope.launch {
             val state = _uiState.value
             val recipeId = state.recipeId
@@ -78,14 +76,14 @@ class RecipeViewModel @Inject constructor(
 
             if (recipeId != 0) {
                 val isFavorited = repository.isRecipeFavorited(recipeId)
-
+                _uiState.update { recipeState ->
+                    recipeState.copy(isFavorited = isFavorited)
+                }
                 if (isFavorited) {
                     repository.removeRecipeFromFavorites(recipeId)
-                    Log.d("RecipeViewModel", "Recipe removed from favorites: $recipeId")
                 } else if (information != null) {
                     val localRecipe = information.toLocalRecipe()
                     repository.addRecipeToFavorites(localRecipe)
-                    Log.d("RecipeViewModel", "Recipe added to favorites: $recipeId")
                 }
             }
         }

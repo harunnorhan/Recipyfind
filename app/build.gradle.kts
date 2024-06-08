@@ -99,4 +99,7 @@ dependencies {
 
     // Work Manager
     implementation(libs.androidx.work.runtime.ktx)
+
+    // Coil
+    implementation(libs.coil.compose)
 }

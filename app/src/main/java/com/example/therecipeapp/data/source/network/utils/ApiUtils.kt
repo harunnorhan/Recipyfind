@@ -1,5 +1,5 @@
 package com.example.therecipeapp.data.source.network.utils
 
 object ApiUtils {
-    const val API_KEY = "a9c8831d0d4244e69683513b16acf761"
+    const val API_KEY = "154e4d0b66d0485a88f9cea1c286fc03"
 }

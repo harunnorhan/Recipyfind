@@ -10,5 +10,8 @@ data class RecipeModel(
     val title: String?,
 
     @SerializedName("image")
-    val image: String?
+    val image: String?,
+
+    @SerializedName("isFavorited")
+    var isFavorited: Boolean = false
 )

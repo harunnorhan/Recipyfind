@@ -12,27 +12,15 @@ object RecipeDestination {
 
 class RecipeNavigationActions(private val navController: NavHostController) {
     fun navigateToGreeting() {
-        navController.navigate(RecipeDestination.GREETING) {
-            popUpTo(RecipeDestination.SPLASH) {
-                saveState = true
-            }
-        }
+        navController.navigate(RecipeDestination.GREETING)
     }
 
     fun navigateToHome() {
-        navController.navigate(RecipeDestination.HOME) {
-            popUpTo(RecipeDestination.GREETING) {
-                inclusive = true
-                saveState = true
-            }
-        }
+        navController.navigate(RecipeDestination.HOME)
     }
 
     fun navigateToRecipe(recipeId: Int) {
         navController.navigate("recipe/${recipeId}") {
-            popUpTo(RecipeDestination.HOME) {
-                saveState = true
-            }
             launchSingleTop = true
         }
     }
