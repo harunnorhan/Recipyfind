@@ -1,6 +1,5 @@
 package com.example.therecipeapp.feature.home
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.therecipeapp.data.RecipeRepository
@@ -27,8 +26,7 @@ data class HomeState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: RecipeRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val repository: RecipeRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState

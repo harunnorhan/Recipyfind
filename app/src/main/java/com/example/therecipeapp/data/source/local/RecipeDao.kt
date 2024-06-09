@@ -16,15 +16,12 @@ interface RecipeDao {
     @Query("SELECT * FROM recipes WHERE id = :id LIMIT 1")
     suspend fun getRecipeById(id: Int): LocalRecipes?
 
-    //observe all recipes
     @Query("SELECT * FROM recipes")
     fun observeRecipes(): Flow<List<LocalRecipes>>
 
-    // Delete a recipe by its ID
     @Query("DELETE FROM recipes WHERE id = :id")
-    suspend fun deleteRecipeById(id: Int) // Yeni fonksiyon
+    suspend fun deleteRecipeById(id: Int)
 
-    // Delete all recipes
     @Query("DELETE FROM recipes")
     suspend fun clearAllRecipes()
 }

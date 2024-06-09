@@ -114,7 +114,7 @@ fun FavoritesScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Favorite Button",
+                            contentDescription = "Back Icon",
                             tint = primaryTextLight
                         )
                     }
@@ -135,13 +135,15 @@ fun FavoritesScreen(
                         color = if (!isDarkTheme) primaryTextLight else primaryTextDark
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    if (state.recipes.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        text = "Here are your favorite recipes!",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = if (!isDarkTheme) primaryTextLight else primaryTextDark
-                    )
+                        Text(
+                            text = "Here are your favorite recipes!",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (!isDarkTheme) primaryTextLight else primaryTextDark
+                        )
+                    }
                 }
             }
 
@@ -175,71 +177,86 @@ fun FavoriteRecipeCards(
     imageLoader: ImageLoader,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(recipes) { recipe ->
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(8.dp)
-                    .clickable { onRecipeClick(recipe.id) }
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize()
+    if (recipes.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(recipes) { recipe ->
+
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(8.dp)
+                        .clickable { onRecipeClick(recipe.id) }
                 ) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(recipe.image)
-                            .crossfade(true)
-                            .build(),
-                        placeholder = painterResource(R.drawable.placeholder),
-                        contentDescription = "recipe image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                        imageLoader = imageLoader
-                    )
-
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = if (!isDarkTheme) primaryTextLight else primaryTextDark,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .align(Alignment.BottomStart)
-                            .padding(12.dp)
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        Text(
-                            text = recipe.title,
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = if (!isDarkTheme) Color.White else homeBackgroundDark
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(recipe.image)
+                                .crossfade(true)
+                                .build(),
+                            placeholder = painterResource(R.drawable.placeholder),
+                            contentDescription = "recipe image",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                            imageLoader = imageLoader
                         )
-                    }
 
-                    IconButton(
-                        onClick = {
-                            viewModel.deleteRecipe(recipe.id)
-                        },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                            .size(32.dp)
-                            .offset(x = (-8).dp, y = (8).dp)
-                            .background(Color.White, shape = CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Button",
-                            tint = primaryTextLight
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    color = if (!isDarkTheme) primaryTextLight else primaryTextDark,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .align(Alignment.BottomStart)
+                                .padding(12.dp)
+                        ) {
+                            Text(
+                                text = recipe.title,
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = if (!isDarkTheme) Color.White else homeBackgroundDark
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                viewModel.deleteRecipe(recipe.id)
+                            },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                                .size(32.dp)
+                                .offset(x = (-8).dp, y = (8).dp)
+                                .background(Color.White, shape = CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Button",
+                                tint = primaryTextLight
+                            )
+                        }
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            Spacer(modifier = Modifier.height(8.dp))
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "There are no recipes here yet...",
+                style = MaterialTheme.typography.titleMedium,
+                color = if (!isDarkTheme) primaryTextLight else primaryTextDark
+            )
         }
     }
 }

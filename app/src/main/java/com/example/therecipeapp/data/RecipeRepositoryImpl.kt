@@ -41,7 +41,7 @@ class RecipeRepositoryImpl @Inject constructor(
         localDataSource.deleteRecipeById(id)
     }
 
-    override suspend fun clearAllFavorites() { // Yeni fonksiyonun implementasyonu
+    override suspend fun clearAllFavorites() {
         localDataSource.clearAllRecipes()
     }
 

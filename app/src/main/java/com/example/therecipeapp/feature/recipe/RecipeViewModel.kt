@@ -1,6 +1,5 @@
 package com.example.therecipeapp.feature.recipe
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.therecipeapp.data.RecipeRepository
@@ -10,7 +9,9 @@ import com.example.therecipeapp.models.informations.InformationModel
 
 import com.example.therecipeapp.utils.ApiResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,21 +20,27 @@ import javax.inject.Inject
 data class RecipeState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
-    val isFavorited: Boolean = false,
+    val isFavorite: Boolean = false,
     val recipeId: Int = 0,
     val information: InformationModel? = null
 )
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
-    val savedStateHandle: SavedStateHandle,
     private val repository: RecipeRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(RecipeState())
     val uiState: StateFlow<RecipeState> = _uiState
 
-    fun loadRecipeData(recipeId: Int) {
-        _uiState.value = RecipeState(recipeId = recipeId)
+    private val _message = MutableSharedFlow<String>()
+    val message: SharedFlow<String> = _message
+
+    suspend fun loadRecipeData(recipeId: Int) {
+        _uiState.update { it.copy(recipeId = recipeId) }
+
+        val isFavorite = repository.isRecipeFavorited(recipeId)
+        _uiState.update { it.copy(isFavorite = isFavorite) }
+
         fetchDetails(recipeId = recipeId)
     }
 
@@ -75,15 +82,19 @@ class RecipeViewModel @Inject constructor(
             val information = state.information
 
             if (recipeId != 0) {
-                val isFavorited = repository.isRecipeFavorited(recipeId)
-                _uiState.update { recipeState ->
-                    recipeState.copy(isFavorited = isFavorited)
-                }
-                if (isFavorited) {
+                val isCurrentlyFavorite = state.isFavorite
+
+                if (isCurrentlyFavorite) {
                     repository.removeRecipeFromFavorites(recipeId)
+                    _message.emit("Recipe removed from favorites")
                 } else if (information != null) {
                     val localRecipe = information.toLocalRecipe()
                     repository.addRecipeToFavorites(localRecipe)
+                    _message.emit("Recipe added to favorites")
+                }
+
+                _uiState.update { recipeState ->
+                    recipeState.copy(isFavorite = !isCurrentlyFavorite)
                 }
             }
         }

@@ -83,7 +83,6 @@ fun RecipeNavigationGraph(
                 onBack = {
                     navController.popBackStack()
                 },
-                navController = navController,
                 imageLoader = imageLoader
             )
         }
