@@ -23,4 +23,6 @@ interface RecipeRepository {
     suspend fun deleteRecipe(id: Int)
 
     suspend fun clearAllFavorites()
+
+    suspend fun getAllRecipeIds()
 }

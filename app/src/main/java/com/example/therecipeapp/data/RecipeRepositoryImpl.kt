@@ -45,4 +45,8 @@ class RecipeRepositoryImpl @Inject constructor(
         localDataSource.clearAllRecipes()
     }
 
+    override suspend fun getAllRecipeIds() {
+        localDataSource.getAllRecipeIds()
+    }
+
 }

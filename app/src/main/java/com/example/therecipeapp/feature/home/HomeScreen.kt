@@ -160,7 +160,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "What do you want to search?",
+                        text = "What do you want to find?",
                         style = MaterialTheme.typography.titleMedium,
                         color = if (!isDarkTheme) primaryTextLight else primaryTextDark
                     )

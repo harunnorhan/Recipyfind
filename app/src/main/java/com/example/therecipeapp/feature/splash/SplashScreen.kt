@@ -70,7 +70,7 @@ fun SplashScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "The Recipe App",
+                    text = "Recipyfind",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.displaySmall,
                     color = primaryTextDark
