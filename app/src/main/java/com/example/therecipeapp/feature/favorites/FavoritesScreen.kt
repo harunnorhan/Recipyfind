@@ -1,5 +1,6 @@
 package com.example.therecipeapp.feature.favorites
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -63,7 +64,8 @@ fun FavoritesScreen(
     onBack: () -> Unit,
     onRecipeClick: (Int) -> Unit,
     imageLoader: ImageLoader,
-    isDarkTheme: Boolean = isSystemInDarkTheme()
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    isInternetAvailable: Boolean
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -81,6 +83,10 @@ fun FavoritesScreen(
         }
     }
 
+    if (!isInternetAvailable) {
+        BackHandler(onBack = { /* ignored */ })
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -95,32 +101,35 @@ fun FavoritesScreen(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    IconButton(
-                        onClick = { onBack() },
-                        modifier = Modifier
-                            .size(40.dp)
-                            .padding(8.dp)
-                            .background(
-                                color = if (!isDarkTheme) backgroundLight else primaryTextDark,
-                                shape = CircleShape
-                            )
+                if (isInternetAvailable) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back Icon",
-                            tint = primaryTextLight
-                        )
-                    }
+                        IconButton(
+                            onClick = { onBack() },
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(8.dp)
+                                .background(
+                                    color = if (!isDarkTheme) backgroundLight else primaryTextDark,
+                                    shape = CircleShape
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back Icon",
+                                tint = primaryTextLight
+                            )
+                        }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
+
 
                 Column(
                     Modifier
@@ -160,7 +169,8 @@ fun FavoritesScreen(
                             recipes = state.recipes,
                             viewModel = viewModel,
                             onRecipeClick = onRecipeClick,
-                            imageLoader = imageLoader
+                            imageLoader = imageLoader,
+                            isInternetAvailable = isInternetAvailable
                         )
                     }
                 }
@@ -176,20 +186,24 @@ fun FavoriteRecipeCards(
     onRecipeClick: (Int) -> Unit,
     imageLoader: ImageLoader,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
+    isInternetAvailable: Boolean
 ) {
     if (recipes.isNotEmpty()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
             items(recipes) { recipe ->
-
                 Card(
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
                         .padding(8.dp)
-                        .clickable { onRecipeClick(recipe.id) }
+                        .clickable {
+                            if (isInternetAvailable) {
+                                onRecipeClick(recipe.id)
+                            }
+                        }
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize()

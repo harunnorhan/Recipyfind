@@ -27,7 +27,8 @@ fun RecipeNavigationGraph(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     startDestination: String = RecipeDestination.SPLASH,
     navActions: RecipeNavigationActions = remember(navController) { RecipeNavigationActions(navController) },
-    imageLoader: ImageLoader
+    imageLoader: ImageLoader,
+    isInternetAvailable: Boolean
 ) {
     val currentNavigationBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavigationBackStackEntry?.destination?.route ?: startDestination
@@ -52,7 +53,11 @@ fun RecipeNavigationGraph(
         ) {
             GreetingScreen(
                 onStartClick = {
-                    navActions.navigateToHome()
+                    if (isInternetAvailable) {
+                        navActions.navigateToHome()
+                    } else {
+                        navActions.navigateToFavorites()
+                    }
                 }
             )
         }
@@ -97,7 +102,8 @@ fun RecipeNavigationGraph(
                 onBack = {
                     navController.popBackStack()
                 },
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
+                isInternetAvailable = isInternetAvailable
             )
         }
     }

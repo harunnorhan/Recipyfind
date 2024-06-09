@@ -1,5 +1,6 @@
 package com.example.therecipeapp.feature.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -104,6 +105,8 @@ fun HomeScreen(
             }
         }
     }
+
+    BackHandler(onBack = { /* ignored */ })
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }

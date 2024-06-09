@@ -45,7 +45,7 @@ fun SplashScreen(
                 }
             )
         )
-        delay(3000L)
+        delay(1500L)
         onSplashFinished(true)
     }
 
