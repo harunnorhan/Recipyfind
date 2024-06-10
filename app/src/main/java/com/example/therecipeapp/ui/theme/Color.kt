@@ -19,4 +19,8 @@ val backgroundDark = Color(0xFF5B3C43)
 val homeBackgroundDark = Color(0xFF2B2D30)
 val topIconColor = Color(0xFFC73835)
 
+val statusBarLight = Color(0xFFFFFFFF)
+val statusBarDark = Color(0xFF2B2D30)
+
+
 

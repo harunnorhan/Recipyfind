@@ -98,7 +98,8 @@ fun FavoritesScreen(
         ) {
             Box(
                 Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 if (isInternetAvailable) {
@@ -140,7 +141,7 @@ fun FavoritesScreen(
                 ) {
                     Text(
                         text = "Favorite Recipes",
-                        style = MaterialTheme.typography.displayMedium,
+                        style = MaterialTheme.typography.displaySmall,
                         color = if (!isDarkTheme) primaryTextLight else primaryTextDark
                     )
 

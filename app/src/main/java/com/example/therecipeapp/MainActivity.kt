@@ -1,14 +1,11 @@
 package com.example.therecipeapp
 
-import android.app.AlertDialog
+import android.content.BroadcastReceiver
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.work.Constraints
@@ -29,28 +26,47 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var imageLoader: ImageLoader
     private lateinit var internetConnectionService: InternetConnectionService
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+    private var isInternetAvailable: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         internetConnectionService = InternetConnectionService(this)
-
         networkCallback = object : ConnectivityManager.NetworkCallback() {
-
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
-                setNavigationGraph(isInternetAvailable = true)
+                isInternetAvailable = true
             }
-
             override fun onLost(network: Network) {
                 super.onLost(network)
-                setNavigationGraph(isInternetAvailable = false)
+                isInternetAvailable = false
             }
         }
         internetConnectionService.registerNetworkCallback(networkCallback)
 
-        setNavigationGraph(isInternetAvailable = internetConnectionService.isInternetAvailable())
+        setContent {
+            val navController: NavHostController = rememberNavController()
+            TheRecipeAppTheme {
+                RecipeNavigationGraph(
+                    navController = navController,
+                    imageLoader = imageLoader,
+                    isInternetAvailable = isInternetAvailable
+                )
+            }
+        }
 
         scheduleRecipeUpdateWorker()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        internetConnectionService.unregisterNetworkCallback(networkCallback)
+    }
+    override fun onPause() {
+        super.onPause()
+        internetConnectionService.unregisterNetworkCallback(networkCallback)
+    }
+    override fun onResume() {
+        super.onResume()
+        isInternetAvailable = internetConnectionService.isInternetAvailable()
     }
 
     override fun onDestroy() {
@@ -72,19 +88,5 @@ class MainActivity : ComponentActivity() {
             ExistingPeriodicWorkPolicy.REPLACE,
             workRequest
         )
-    }
-
-    private fun setNavigationGraph(isInternetAvailable: Boolean) {
-        setContent {
-            val navController: NavHostController = rememberNavController()
-            val navActions = remember(navController) { RecipeNavigationActions(navController) }
-            TheRecipeAppTheme {
-                RecipeNavigationGraph(
-                    navController = navController,
-                    imageLoader = imageLoader,
-                    isInternetAvailable = isInternetAvailable
-                )
-            }
-        }
     }
 }

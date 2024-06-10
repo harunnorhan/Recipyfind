@@ -47,7 +47,7 @@ fun GreetingScreen(
             Image(
                 painter = painterResource(id = R.drawable.greeting_background),
                 contentDescription = null,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillWidth
             )
         }
 
