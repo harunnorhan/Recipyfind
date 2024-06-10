@@ -1,6 +1,5 @@
 package com.example.therecipeapp
 
-import android.content.BroadcastReceiver
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
@@ -54,15 +53,6 @@ class MainActivity : ComponentActivity() {
         }
 
         scheduleRecipeUpdateWorker()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        internetConnectionService.unregisterNetworkCallback(networkCallback)
-    }
-    override fun onPause() {
-        super.onPause()
-        internetConnectionService.unregisterNetworkCallback(networkCallback)
     }
     override fun onResume() {
         super.onResume()
